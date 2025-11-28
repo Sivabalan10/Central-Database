@@ -7,9 +7,14 @@ from pymongo.database import Database
 from pymongo.collection import Collection
 from bson.objectid import ObjectId
 from werkzeug.security import generate_password_hash, check_password_hash
+import certifi
 
 MONGO_URI = os.getenv("MONGO_URI")
-client = MongoClient(MONGO_URI)
+client = MongoClient(
+    MONGO_URI,
+    tls=True,                 # ensure TLS
+    tlsCAFile=certifi.where() # use trusted CA bundle
+)
 
 SECURE_DB_NAME = "secure_auth"
 SECURE_USERS_COLL = "users"
