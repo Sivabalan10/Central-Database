@@ -8,7 +8,7 @@ from flask import (
     url_for, session, jsonify, flash
 )
 
-from models import (
+from core.models import (
     init_auth_collection, verify_user, list_databases,
     get_collections, paginate_documents, get_document,
     insert_document, update_document, delete_document,
