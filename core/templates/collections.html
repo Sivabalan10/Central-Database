@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1 class="page-title">Collections in <code>{{ db_name }}</code></h1>
+  <p class="page-subtitle">
+    Manage collections inside this database. You can create new collections and
+    delete existing ones (except protected ones).
+  </p>
+
+  <!-- Create collection -->
+  <div class="card">
+    <div class="badge">Create collection</div>
+    <form method="POST"
+          action="{{ url_for('create_collection_view', db_name=db_name) }}"
+          style="margin-top:0.4rem;">
+      <div class="grid grid-2">
+        <div>
+          <label for="coll_name">Collection name</label>
+          <input id="coll_name" name="coll_name" placeholder="logs, products, ..." required />
+        </div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-top:0.5rem;">
+        <button class="btn btn-primary" type="submit">Create</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Existing collections -->
+  <div class="grid grid-3">
+    {% for c in collections %}
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;">
+          <div style="font-weight:600;">{{ c }}</div>
+          <span class="tag">collection</span>
+        </div>
+        <p class="muted" style="margin-bottom:0.6rem;">View and manage documents in <code>{{ c }}</code>.</p>
+
+        <div style="display:flex;justify-content:space-between;gap:0.4rem;">
+          <a class="btn btn-ghost"
+             href="{{ url_for('view_collection_data', db_name=db_name, coll_name=c) }}"
+             style="flex:1;justify-content:center;">
+            Open
+          </a>
+
+          {% if not (db_name == secure_db and c == "users") %}
+            <form method="POST"
+                  action="{{ url_for('delete_collection_view', db_name=db_name, coll_name=c) }}"
+                  onsubmit="return confirm('Delete collection {{ c }} from {{ db_name }}?');"
+                  style="flex:1;">
+              <button class="btn btn-ghost"
+                      type="submit"
+                      style="width:100%;justify-content:center;border-color:rgba(248,113,113,0.8);color:#fecaca;">
+                Delete
+              </button>
+            </form>
+          {% endif %}
+        </div>
+      </div>
+    {% else %}
+      <div class="card">
+        <p class="muted">No collections found in this database.</p>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}

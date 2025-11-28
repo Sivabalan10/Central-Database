@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1 class="page-title">Databases</h1>
+  <p class="page-subtitle">
+    Full control over your MongoDB hierarchy. Create and delete databases
+    (except internal and <code>secure_auth</code>).
+  </p>
+
+  <!-- Create database -->
+  <div class="card">
+    <div class="badge">Create database</div>
+    <p class="muted" style="margin-top:0.3rem;">
+      MongoDB creates a database when you create the first collection.  
+      Provide a database name and an initial collection.
+    </p>
+    <form method="POST" action="{{ url_for('create_database_view') }}" style="margin-top:0.4rem;">
+      <div class="grid grid-2">
+        <div>
+          <label for="db_name">Database name</label>
+          <input id="db_name" name="db_name" placeholder="my_app_db" required />
+        </div>
+        <div>
+          <label for="coll_name">Initial collection</label>
+          <input id="coll_name" name="coll_name" placeholder="users (default if empty)" />
+        </div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-top:0.5rem;">
+        <button class="btn btn-primary" type="submit">Create</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Existing databases -->
+  <div class="grid grid-3">
+    {% for db in dbs %}
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;">
+          <div style="font-weight:600;font-size:0.95rem;">{{ db }}</div>
+          {% if db == secure_db %}
+            <span class="tag">secure_auth</span>
+          {% endif %}
+        </div>
+        <p class="muted" style="margin-bottom:0.6rem;">
+          Collections and documents inside <code>{{ db }}</code>.
+        </p>
+        <div style="display:flex;justify-content:space-between;gap:0.4rem;">
+          <a class="btn btn-ghost" href="{{ url_for('view_collections', db_name=db) }}" style="flex:1;justify-content:center;">
+            Open
+          </a>
+
+          {% if db != secure_db %}
+            <form method="POST"
+                  action="{{ url_for('delete_database_view', db_name=db) }}"
+                  onsubmit="return confirm('Delete database {{ db }} and ALL its data?');"
+                  style="flex:1;">
+              <button class="btn btn-ghost"
+                      type="submit"
+                      style="width:100%;justify-content:center;border-color:rgba(248,113,113,0.8);color:#fecaca;">
+                Delete
+              </button>
+            </form>
+          {% endif %}
+        </div>
+      </div>
+    {% else %}
+      <div class="card">
+        <p class="muted">No databases visible yet. Create one above.</p>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}

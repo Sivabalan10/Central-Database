@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1 class="page-title">
+    Edit document — {{ db_name }} / {{ coll_name }}
+  </h1>
+  <p class="page-subtitle">
+    Document ID: <code>{{ doc._id }}</code>
+  </p>
+
+  <div class="card">
+    <form method="POST">
+      <label for="json_data">JSON</label>
+      <textarea id="json_data" name="json_data" required>{{ doc | tojson(indent=2) }}</textarea>
+      <div style="display:flex;justify-content:flex-end;gap:0.5rem;margin-top:0.4rem;">
+        <a class="btn btn-ghost" href="{{ url_for('view_collection_data', db_name=db_name, coll_name=coll_name) }}">
+          Cancel
+        </a>
+        <button class="btn btn-primary" type="submit">Save changes</button>
+      </div>
+    </form>
+  </div>
+{% endblock %}

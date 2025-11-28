@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block sidebar %}{% endblock %}
+
+{% block content %}
+<div style="display:flex;align-items:center;justify-content:center;min-height:60vh;">
+  <div class="card" style="max-width:380px;width:100%;animation-delay:0.05s;">
+    <div class="badge">Secure gateway</div>
+    <h1 class="page-title" style="margin-top:0.6rem;">Sign in to DBMS</h1>
+    <p class="page-subtitle">
+      Enter your secure_auth credentials to access the Mongo console.
+    </p>
+    <form method="POST" action="{{ url_for('login_post') }}">
+      <div>
+        <label for="username">Username</label>
+        <input id="username" name="username" placeholder="admin" required />
+      </div>
+      <div>
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" placeholder="••••••••" required />
+      </div>
+      <button class="btn btn-primary" type="submit" style="margin-top:0.3rem;width:100%;justify-content:center;">
+        Enter console
+      </button>
+      <p class="muted" style="margin-top:0.5rem;font-size:0.75rem;">
+        Default credentials come from <code>ADMIN_USERNAME</code> / <code>ADMIN_PASSWORD</code>.
+      </p>
+    </form>
+  </div>
+</div>
+{% endblock %}

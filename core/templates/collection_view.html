@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1 class="page-title">
+    {{ db_name }} / {{ coll_name }}
+  </h1>
+  <p class="page-subtitle">
+    Documents (page {{ page }} of {{ total_pages }}) — total: {{ total }}.
+  </p>
+
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem;">
+      <div>
+        <div class="badge">Insert document</div>
+        <p class="muted" style="margin-top:0.3rem;">
+          JSON only. MongoDB will generate <code>_id</code> automatically.
+        </p>
+      </div>
+    </div>
+    <form method="POST" action="{{ url_for('insert_doc_view', db_name=db_name, coll_name=coll_name) }}">
+      <textarea name="json_data" placeholder='{"name": "example", "value": 123}' required></textarea>
+      <button class="btn btn-primary" type="submit" style="margin-top:0.4rem;align-self:flex-end;">
+        Insert
+      </button>
+    </form>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <div class="badge">Documents</div>
+      <div class="pagination">
+        {% if page > 1 %}
+          <a class="btn btn-ghost" href="{{ url_for('view_collection_data', db_name=db_name, coll_name=coll_name, page=page-1, page_size=page_size) }}">Prev</a>
+        {% endif %}
+        <span>Page {{ page }} / {{ total_pages }}</span>
+        {% if page < total_pages %}
+          <a class="btn btn-ghost" href="{{ url_for('view_collection_data', db_name=db_name, coll_name=coll_name, page=page+1, page_size=page_size) }}">Next</a>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if documents %}
+      <table>
+        <thead>
+          <tr>
+            <th>_id</th>
+            <th>Data (JSON preview)</th>
+            <th style="width:120px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for d in documents %}
+            <tr>
+              <td><code>{{ d._id }}</code></td>
+              <td style="max-width:420px;">
+                <pre style="white-space:pre-wrap;font-size:0.75rem;color:var(--muted);margin:0;">{{ d | tojson(indent=2) }}</pre>
+              </td>
+              <td>
+                <a class="btn btn-ghost" style="margin-bottom:0.3rem;width:100%;justify-content:center;"
+                   href="{{ url_for('edit_doc_view', db_name=db_name, coll_name=coll_name, doc_id=d._id) }}">
+                  Edit
+                </a>
+                <form method="POST"
+                      action="{{ url_for('delete_doc_view', db_name=db_name, coll_name=coll_name, doc_id=d._id) }}"
+                      onsubmit="return confirm('Delete this document?');">
+                  <button class="btn btn-ghost" type="submit" style="width:100%;justify-content:center;border-color:rgba(248,113,113,0.7);color:#fecaca;">
+                    Delete
+                  </button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="muted" style="margin-top:0.5rem;">No documents found.</p>
+    {% endif %}
+  </div>
+{% endblock %}
